@@ -162,7 +162,29 @@ def cls_section(base, final):
 {table(["File", "Actual", "Predicted", "p(laptop)"], err_rows) if errors else '<p class="muted">None.</p>'}'''
 
 
-def ocr_section(base, final, target):
+def ocr_path(runs):
+    """Every OCR run in order, with what changed since the previous one (read from the metrics files)."""
+    if len(runs) < 2:
+        return ""
+    rows, prev = [], None
+    for r in sorted(runs, key=lambda r: r["run_at"]):
+        what = []
+        if prev is None:
+            what.append("Starting point")
+        else:
+            if r["version"] != prev["version"]:
+                what.append(f'Pipeline {prev["version"]} → {r["version"]}: prompt with the brand list, photo preprocessing, retries')
+            if r["model"] != prev["model"]:
+                what.append(f'Vision model {prev["model"]} → {r["model"]}')
+            what = what or ["Re-run with the same settings"]
+        acc = f'{pct(r["accuracy"])} ({r["correct"]}/{r["gold_photos"]})'
+        rows.append([e(f'{r["version"]} · {r["model"]}'), e("; ".join(what)),
+                     e(acc) + (" " + delta(prev["accuracy"], r["accuracy"]) if prev else "")])
+        prev = r
+    return "<h3>How OCR accuracy moved, run by run</h3>" + table(["Run", "What changed", "Gold-set accuracy"], rows, "metrics")
+
+
+def ocr_section(base, final, target, runs=()):
     if not final:
         return '<p class="empty">Run <code>python src/eval_ocr.py --version v1 --stage baseline</code> and <code>--version v2 --stage improved</code> first.</p>'
     cols = [r for r in (base, final) if r] if base is not final else [final]
@@ -183,6 +205,7 @@ def ocr_section(base, final, target):
   <div class="col"><h3>What we changed</h3>{changes_list(changes)}</div>
   <div class="col">{table(heads, rows, "metrics")}</div>
 </div>
+{ocr_path(list(runs))}
 <h3>Accuracy per brand</h3>{legend}
 <div class="chart-wrap">{brand_chart(base if base is not final else None, final, target)}</div>
 <h3>Gold-set photos still missed <span class="count">{len(final.get("misses", []))}</span></h3>
@@ -325,7 +348,7 @@ def build(team, demo):
 
 <section>
   <h2><span class="section-num">3.1</span>Brand OCR on normal batteries</h2>
-  {ocr_section(ob, of, ocr_target)}
+  {ocr_section(ob, of, ocr_target, ocr_runs)}
 </section>
 
 <section>
@@ -341,6 +364,7 @@ python src/train_transfer.py --name mobilenet
 python src/evaluate.py --model models/mobilenet_baseline.keras models/mobilenet.keras --stage baseline improved
 python src/eval_ocr.py --version v1 --stage baseline
 python src/eval_ocr.py --version v2 --stage improved
+python src/eval_ocr.py --version v2 --model qwen2.5vl:7b --stage improved
 python tools/build_report.py</pre>
   <h3>Every evaluation run</h3>
   {runs_log(cls_runs, ocr_runs)}
