@@ -1,0 +1,7 @@
+tensorflow>=2.16     # includes Keras 3; CPU is enough
+numpy
+pillow
+scikit-learn
+matplotlib
+httpx
+pytest

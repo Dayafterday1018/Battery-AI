@@ -1,0 +1,12 @@
+# photos and generated data (brands.csv and ocr_gold.csv are kept)
+data/*
+!data/brands.csv
+!data/ocr_gold.csv
+
+models/
+reports/
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/

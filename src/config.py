@@ -1,0 +1,33 @@
+"""Single source of truth for paths and settings (CLAUDE.md: size, split and seed live here only)."""
+import os
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# Paths
+RAW = ROOT / "data" / "raw"            # data/raw/laptop, data/raw/normal (folder name = label)
+SPLITS = ROOT / "data" / "splits"      # train.txt / test.txt
+REVIEW = ROOT / "data" / "review"      # unsure photos, ask Client W
+BRANDS_CSV = ROOT / "data" / "brands.csv"
+OCR_GOLD_CSV = ROOT / "data" / "ocr_gold.csv"
+MODELS = ROOT / "models"
+REPORTS = ROOT / "reports"
+
+# Data
+CLASSES = ("laptop", "normal")         # label 1 = laptop, 0 = normal
+IMAGE_EXTS = {".jpg", ".jpeg", ".png"}
+IMG = 128                              # every photo is reshaped to IMG x IMG x 3
+SEED = 42
+TEST_SIZE = 0.2                        # 80 / 20 train / test
+VAL_SIZE = 0.2                         # share of train held out for validation
+NEAR_DUP_DIST = 10                     # dHash (256-bit) Hamming distance that counts as "same battery"
+
+# Production
+MODEL_PATH = Path(os.getenv("BATTERY_MODEL", MODELS / "mobilenet.keras"))  # set after step 2.3
+THRESHOLD = float(os.getenv("BATTERY_THRESHOLD", 0.5))  # p(laptop) >= THRESHOLD -> laptop, no fee
+
+# OCR (LLaVA through Ollama)
+OLLAMA = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llava")
+OLLAMA_TIMEOUT = 120
+BRAND_CUTOFF = 0.8                     # fuzzy-match cutoff

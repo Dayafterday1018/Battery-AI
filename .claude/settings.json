@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python src/*)",
+      "Bash(pytest*)",
+      "Bash(ollama run llava*)"
+    ]
+  }
+}
