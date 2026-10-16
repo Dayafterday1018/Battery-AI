@@ -6,11 +6,12 @@ Writes reports/results.csv (file, label, confidence, brand)
        reports/review.csv  (file)           normal batteries whose brand is "unknown"
 """
 import csv
+import os
 import sys
 from collections import Counter
 from pathlib import Path
 
-from config import IMAGE_EXTS, MODEL_PATH, REPORTS, THRESHOLD
+from config import IMAGE_EXTS, IMG, MODEL_PATH, REPORTS, THRESHOLD
 from prepare import load
 
 
@@ -21,11 +22,11 @@ def load_classifier(path: Path = MODEL_PATH):
     return keras.models.load_model(path)
 
 
-def run(folder, model, read_brand, threshold: float = THRESHOLD, out: Path = REPORTS):
+def run(folder, model, read_brand, threshold: float = THRESHOLD, img: int = IMG, out: Path = REPORTS):
     photos = sorted(p for p in Path(folder).iterdir() if p.suffix.lower() in IMAGE_EXTS)
     rows = []
     for path in photos:
-        X, _ = load([path])                                   # reshape
+        X, _ = load([path], img)                              # reshape to the model's input size
         p = float(model.predict(X, verbose=0)[0, 0])          # p(laptop)
         if p >= threshold:
             rows.append((path.name, "laptop", round(p, 3), ""))  # no fee
@@ -55,8 +56,13 @@ if __name__ == "__main__":
         sys.exit("usage: python src/pipeline.py <folder of photos>")
     from ocr import load_brands, read_brand
 
+    from training import load_meta
+
     brands = load_brands()
-    rows, fees, review = run(sys.argv[1], load_classifier(), lambda p: read_brand(p, brands))
+    meta = load_meta(MODEL_PATH)       # input size and validation-tuned threshold of the chosen model
+    rows, fees, review = run(sys.argv[1], load_classifier(), lambda p: read_brand(p, brands),
+                             threshold=float(os.getenv("BATTERY_THRESHOLD", meta.get("threshold", THRESHOLD))),
+                             img=meta.get("img", IMG))
     laptops = sum(r[1] == "laptop" for r in rows)
     print(f"{len(rows)} photos · laptop {laptops} · normal {len(rows) - laptops} · review {len(review)}")
     for brand, n in fees.most_common():

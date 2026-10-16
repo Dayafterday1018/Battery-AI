@@ -39,10 +39,10 @@ def read_split(name: str, splits: Path = SPLITS) -> list[Path]:
     return [ROOT / line for line in lines]
 
 
-def load(paths) -> tuple[np.ndarray, np.ndarray]:
-    """Reshape: any photo -> (n, IMG, IMG, 3), pixels scaled to 0..1. y: 1 = laptop."""
+def load(paths, size: int = IMG) -> tuple[np.ndarray, np.ndarray]:
+    """Reshape: any photo -> (n, size, size, 3), pixels scaled to 0..1. y: 1 = laptop."""
     X = np.stack([
-        np.asarray(open_rgb(p).resize((IMG, IMG)), dtype=np.float32) for p in paths
+        np.asarray(open_rgb(p).resize((size, size)), dtype=np.float32) for p in paths
     ]) / 255.0
     y = np.array([label_of(Path(p)) for p in paths], dtype=np.int32)
     return X, y

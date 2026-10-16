@@ -22,6 +22,15 @@ TEST_SIZE = 0.2                        # 80 / 20 train / test
 VAL_SIZE = 0.2                         # share of train held out for validation
 NEAR_DUP_DIST = 10                     # dHash (256-bit) Hamming distance that counts as "same battery"
 
+# Targets (course requirement, week 2)
+TARGET_CLS_ACCURACY = 0.98             # battery classification, test set
+TARGET_OCR_ACCURACY = 0.85             # brand OCR, gold set
+TARGET_NORMAL_RECALL = 0.95            # each missed normal battery is a fee never billed
+
+# Improved classifier (v2)
+IMG_TRANSFER = 224                     # MobileNetV2's native input size
+METRICS = ROOT / "reports" / "metrics" # one JSON per evaluation run, read by tools/build_report.py
+
 # Production
 MODEL_PATH = Path(os.getenv("BATTERY_MODEL", MODELS / "mobilenet.keras"))  # set after step 2.3
 THRESHOLD = float(os.getenv("BATTERY_THRESHOLD", 0.5))  # p(laptop) >= THRESHOLD -> laptop, no fee
