@@ -2,6 +2,7 @@
 data/*
 !data/brands.csv
 !data/ocr_gold.csv
+!data/inbox_expected.csv
 
 models/
 reports/

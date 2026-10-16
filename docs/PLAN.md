@@ -16,8 +16,15 @@ Each AI step has one developer and one validator; the next step starts only afte
 | 3.1 | Brand OCR with LLaVA | C · A | src/ocr.py, src/eval_ocr.py | Gold set meets agreed accuracy; every "unknown" goes to review |
 | 4 | Connect the pipeline and ship | A or C · other | src/pipeline.py | fees.csv matches a hand count of 20 photos; /review finds nothing blocking |
 
-## Open questions for Client W
-- Target recall for normal batteries (each miss is a fee never billed).
-- Target OCR accuracy on the gold set.
-- Final brand list (data/brands.csv).
-- Can photos be taken with the label side facing the camera?
+## Open questions for Client W (proposed values, to confirm with the TA / Client W)
+| Question | Proposed | Reason |
+|---|---|---|
+| Target recall for normal batteries | ≥ 0.95 | Each miss is a fee never billed; slide 26 MobileNetV2 reaches 0.97 |
+| Target OCR accuracy on the gold set | ≥ 90%, and every "unknown" to manual review | Slide 29 baseline is 88%; the gap is mostly fixable by photo angle |
+| Final brand list | data/brands.csv (14 brands) | Unlisted brands become "unknown" → review, never billed |
+| Photo rules | Label side facing the camera, one battery per photo, no flash glare | 3 of 5 OCR misses on slide 29 were labels turned away |
+
+## Dry run without real photos
+`python tools/make_fake_data.py` writes FAKE_* photos (normal ones carry a printed brand),
+a 40-photo gold set (data/ocr_gold.csv) and a 20-photo inbox with its true answer
+(data/inbox_expected.csv). After step 4: `python tools/compare_expected.py`.

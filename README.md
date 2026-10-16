@@ -26,7 +26,9 @@ pytest -q                                  # tests (model and Ollama mocked)
 ```
 
 Photos go in `data/raw/laptop/` and `data/raw/normal/` (folder name = label).
-To dry-run without real photos: `python tools/make_fake_data.py`, then delete `data/raw/*`.
+To dry-run without real photos: `python tools/make_fake_data.py` (photos, gold set and an
+inbox with its true answer), then after step 4 `python tools/compare_expected.py`.
+Before adding real photos, delete every `FAKE_*` file and reset `data/ocr_gold.csv` to its header.
 
 Settings (image size, seed, split, model path, threshold, Ollama host): `src/config.py`.
 The production model is `models/mobilenet.keras` by default; override with `BATTERY_MODEL`.
