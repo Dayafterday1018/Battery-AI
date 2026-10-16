@@ -19,7 +19,7 @@ TEAM="${TEAM:-}"
 FAST="${FAST:-0}"
 RETRAIN="${RETRAIN:-0}"
 SKIP_OCR="${SKIP_OCR:-0}"
-OCR_MODELS="${OCR_MODELS:-llava}"
+OCR_MODELS="${OCR_MODELS:-llava qwen2.5vl:7b}"   # D9: llava stays the v1 baseline; qwen2.5vl reaches the target
 OLLAMA_HOST="${OLLAMA_HOST:-http://localhost:11434}"
 export TF_CPP_MIN_LOG_LEVEL=3
 

@@ -37,6 +37,6 @@ THRESHOLD = float(os.getenv("BATTERY_THRESHOLD", 0.5))  # p(laptop) >= THRESHOLD
 
 # OCR (LLaVA through Ollama)
 OLLAMA = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llava")
-OLLAMA_TIMEOUT = 120
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5vl:7b")  # D9: 95% on the gold set vs llava 59%
+OLLAMA_TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", 120))  # raise on a shared, busy Ollama server
 BRAND_CUTOFF = 0.8                     # fuzzy-match cutoff

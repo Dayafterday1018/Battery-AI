@@ -175,9 +175,12 @@ def ocr_section(base, final, target):
                  for m in final.get("misses", [])[:15]]
     legend = ('<p class="legend"><span class="sw base"></span>baseline <span class="sw final"></span>final</p>'
               if base and base is not final else "")
+    changes = list(final.get("changes", []))
+    if base and base.get("model") != final.get("model"):
+        changes.insert(0, f'Vision model {base.get("model")} → {final.get("model")}')
     return f'''
 <div class="split">
-  <div class="col"><h3>What we changed</h3>{changes_list(final.get("changes", []))}</div>
+  <div class="col"><h3>What we changed</h3>{changes_list(changes)}</div>
   <div class="col">{table(heads, rows, "metrics")}</div>
 </div>
 <h3>Accuracy per brand</h3>{legend}
