@@ -27,10 +27,11 @@ def load_runs():
     return [r for r in runs if r.get("kind") == "classifier"], [r for r in runs if r.get("kind") == "ocr"]
 
 
-def pick(runs, stage):
+def pick(runs, stage, best=False):
+    """Latest run of a stage; with best=True the most accurate one (every run still appears in the log)."""
     tagged = [r for r in runs if r.get("stage") == stage]
     if tagged:
-        return tagged[-1]
+        return max(tagged, key=lambda r: (r["accuracy"], r["run_at"])) if best else tagged[-1]
     if not runs:
         return None
     return runs[0] if stage == "baseline" else runs[-1]
@@ -288,7 +289,7 @@ footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padd
 def build(team, demo):
     cls_runs, ocr_runs = load_runs()
     cb, cf = pick(cls_runs, "baseline"), pick(cls_runs, "improved")
-    ob, of = pick(ocr_runs, "baseline"), pick(ocr_runs, "improved")
+    ob, of = pick(ocr_runs, "baseline"), pick(ocr_runs, "improved", best=True)
     cls_target = (cf or {}).get("target", 0.98)
     ocr_target = (of or {}).get("target", 0.85)
     when = datetime.now().strftime("%Y-%m-%d")

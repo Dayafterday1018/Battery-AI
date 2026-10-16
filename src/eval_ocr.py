@@ -37,6 +37,13 @@ def main():
     brands = load_brands()
     with open(OCR_GOLD_CSV, newline="", encoding="utf-8") as f:
         gold = list(csv.DictReader(f))
+    blank = [r["file"] for r in gold if not r["brand"].strip()]
+    if blank:
+        raise SystemExit(f"{len(blank)} gold rows have no brand yet (e.g. {blank[0]}). "
+                         "Fill them in data/ocr_gold.csv, or delete rows with no readable brand.")
+    unknown_brands = sorted({r["brand"] for r in gold} - set(brands))
+    if unknown_brands:
+        raise SystemExit(f"Brands not in data/brands.csv: {', '.join(unknown_brands)}. Add them there or fix the spelling.")
     if args.limit:
         gold = gold[:args.limit]
     if not gold:

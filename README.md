@@ -1,5 +1,8 @@
 # BatteryScan · battery photo AI for Client W
 
+> **Teammates start here:** `docs/TEAM_GUIDE.md` (步驟與分工) · `docs/CLAUDE_CODE_PROMPT.md` (貼進 Claude Code 的完整指令)
+> With the class photos in hand: `python tools/import_data.py --src <folder>` → `python tools/make_gold_template.py` → `bash run_all.sh`
+
 Laptop batteries pay no recycling fee; every other battery is billed to its maker.
 `src/pipeline.py` classifies each photo (CNN / MobileNetV2), skips laptops, reads the
 brand on the rest with LLaVA (local, via Ollama) and counts fees per brand.
